@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
+
+    <title>Cinema4j</title>
+</head>
+<body>
+<div class="container">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Cinema4j</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link" th:href="@{/index}">Главная</a>
+                <a class="nav-item nav-link" th:if="${user.name != 'Гость'}" th:href="@{/tickets}">
+                    Мои билеты</a>
+                <a class="nav-item nav-link" th:if="${user.name == 'Гость'}" th:href="@{/loginPage}">
+                    <span th:text="${user.name}"></span>
+                    <span> | Войти</span>
+                </a>
+                <a class="nav-item nav-link" th:if="${user.name != 'Гость'}" th:href="@{/logout}">
+                    <span th:text="${user.name}"></span>
+                    <span> | Выйти</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="row">
+        <div class="card" style="width: 100%">
+            <div class="card-header">
+                <h3>
+                    Покупка билета
+                </h3>
+            </div>
+            <div class="card-body">
+                <div th:if="${fail}" class="alert alert-danger" role="alert">
+                    Это место уже забронировано.
+                </div>
+                <div th:if="${noTickets}" class="alert alert-danger" role="alert">
+                    Свободных мест нет.
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Фильм</th>
+                            <th>Ряд</th>
+                            <th>Место</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <form th:action="@{/buyTicket}" method="POST" th:object="${ticket}">
+                            <input type="hidden" name="session.id" th:field="*{session.id}"/>
+                            <input type="hidden" name="session.name" th:field="*{session.name}"/>
+                            <input type="hidden" name="session.poster" th:field="*{session.poster}"/>
+                            <input type="hidden" name="userId" th:field="*{userId}"/>
+                            <tr>
+                                <td th:text="${ticket.session.name}"></td>
+                                <td>
+                                    <select class="form-control" id="row" name="row"
+                                            th:field="*{row}" th:onchange="">
+                                        <option th:each="row : ${rows}" th:value="${row}"
+                                                th:text="${row}">
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="cell"
+                                            name="cell" th:field="*{cell}">
+                                        <option th:each="cell : ${cells}" th:value="${cell}"
+                                                th:text="${cell}">
+                                        </option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <td>
+                                <button th:if="${!noTickets}" type="submit"
+                                        class="btn btn-primary">Купить
+                                </button>
+                            </td>
+                        </form>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let frm = document.forms[0];
+    frm.row.onchange = function () {
+        console.log(frm.row.value);
+    }
+</script>
+
+</body>
+</html>
